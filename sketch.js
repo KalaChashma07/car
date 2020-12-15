@@ -1,29 +1,46 @@
-var ball;
+var hball,database;
+var Position
 
 function setup(){
     createCanvas(500,500);
-    ball = createSprite(250,250,10,10);
-    ball.shapeColor = "red";
+    database = firebase.database()
+    console.log(database)
+ hball = createSprite(250,250,10,10);
+ hball.shapeColor = "red";
+ var hballPosition = database.ref('Ball/Position')
+ hballPosition.on("value",readPosition,showErrors)
 }
 
 function draw(){
     background("white");
     if(keyDown(LEFT_ARROW)){
-        changePosition(-1,0);
+        writePosition(-1,0);
     }
     else if(keyDown(RIGHT_ARROW)){
-        changePosition(1,0);
+        writePosition(1,0);
     }
     else if(keyDown(UP_ARROW)){
-        changePosition(0,-1);
+        writePosition(0,-1);
     }
     else if(keyDown(DOWN_ARROW)){
-        changePosition(0,+1);
+        writePosition(0,+1);
     }
     drawSprites();
 }
 
-function changePosition(x,y){
-    ball.x = ball.x + x;
-    ball.y = ball.y + y;
+function writePosition(x,y){
+    database.ref('Ball/Position').set({
+        'x':Position.x+x,
+        'y':Position.y+y,
+    })
+}
+function readPosition(data){
+Position = data.val()
+console.log(Position.x)
+hball.x = Position.x
+hball.y = Position.y
+
+}
+function showErrors(){
+    console.log("error in wrirting to the databse")
 }
